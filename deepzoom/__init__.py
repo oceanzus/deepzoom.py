@@ -531,8 +531,9 @@ def safe_open(path):
     # continue this in Python 3, we manually add `file://` prefix if `path` is
     # not a URL. This change is isolated to this function as we want the output
     # XML to still have the original input paths instead of absolute paths:
-    has_scheme = bool(urlparse(path).scheme)
-    normalized_path = f"file://{os.path.abspath(path)}" if not has_scheme else path
+    schemes = ['file', 'ftp', 'gopher', 'hdl', 'http', 'https', 'imap', 'mailto', 'mms', 'news', 'nntp', 'prospero', 'rsync', 'rtsp', 'rtspu', 'sftp', 'shttp', 'sip', 'sips', 'snews', 'svn', 'svn+ssh', 'telnet', 'wais', 'ws', 'wss']
+    has_scheme = urlparse(path).scheme in schemes
+    normalized_path = "file:" + urllib.request.pathname2url(path) if not has_scheme else path
     return io.BytesIO(urllib.request.urlopen(normalized_path).read())
 
 
